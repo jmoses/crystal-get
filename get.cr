@@ -106,11 +106,11 @@ def fetch_single(url : String)
   full_path = File.join(path, fname)
 
   if File.exists?(full_path)
-    logger.debug "exists #{full_path}"
+    logger.debug "[#{Fiber.current.name}] exists #{full_path}"
     return
   end
 
-  logger.debug("fetching #{url}")
+  logger.debug("[#{Fiber.current.name}] fetching #{url}")
 
   if ! Dir.exists?(path)
     Dir.mkdir_p(path)
@@ -123,8 +123,8 @@ def fetch_single(url : String)
   end
 end
 
-threads.times do 
-  spawn do
+threads.times do |i|
+  spawn name: i.to_s do
     loop do
       url = url_chan.receive
       break if url == "::done::"
